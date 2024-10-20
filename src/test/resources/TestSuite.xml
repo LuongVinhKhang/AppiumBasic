@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Appium Test Suite">
+    <test name="Android Tests">
+        <classes>
+            <class name="TestContactAppAndroid"/>
+            <class name="TestWebAndroid"/>
+        </classes>
+    </test>
+    <test name="iOS Tests">
+        <classes>
+            <class name="TestContactAppIOS"/>
+            <class name="TestWebIOS"/>
+        </classes>
+    </test>
+</suite>
