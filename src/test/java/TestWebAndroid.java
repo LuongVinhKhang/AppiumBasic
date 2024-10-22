@@ -1,7 +1,10 @@
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -16,8 +19,8 @@ public class TestWebAndroid extends TestBaseline {
     public void setUp() throws MalformedURLException {
         UiAutomator2Options options = new UiAutomator2Options()
                 .setUdid("emulator-5554")
-                .setNewCommandTimeout(Duration.ofSeconds(30));
-        options.setCapability("browserName", "Chrome");
+                .setNewCommandTimeout(Duration.ofSeconds(30))
+                .withBrowserName("Chrome");
 
         driver = new AndroidDriver(new URL(APPIUM_SERVER_URL), options);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
@@ -25,11 +28,20 @@ public class TestWebAndroid extends TestBaseline {
 
     @Test
     public void test() {
-        driver.navigate().to("https://magento.softwaretestingboard.com/push-it-messenger-bag.html");
-        WebElement addToCartButton = driver.findElement(AppiumBy.cssSelector("button#product-addtocart-button"));
+        driver.get("https://magento.softwaretestingboard.com/push-it-messenger-bag.html");
+
+        WebElement addToCartButton = driver.findElement(By.id("product-addtocart-button"));
         driver.executeScript("arguments[0].scrollIntoView(true);", addToCartButton);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOf(addToCartButton));
         addToCartButton.click();
-        Assert.assertTrue(driver.findElement(AppiumBy.xpath("//div[@data-block='minicart']")).isDisplayed());
-        driver.findElement(AppiumBy.xpath("//div[@data-block='minicart']")).click();
+
+        driver.findElement(By.cssSelector("div.messages a")).click();
+        Assert.assertTrue(driver.findElement(AppiumBy.xpath(
+                        "//table[@id='shopping-cart-table']" +
+                                "//tr[@class='item-info' and " +
+                                ".//strong[@class='product-item-name']" +
+                                "//a[text()='Push It Messenger Bag']]")).isDisplayed(),
+                "Product not found in cart");
     }
 }
